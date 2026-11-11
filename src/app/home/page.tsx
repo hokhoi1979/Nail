@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import type { FormEvent } from "react";
 
 type Service = {
@@ -11,6 +11,13 @@ type Service = {
   duration: string;
   price: string;
   image: string;
+};
+
+type CalendarDay = {
+  key: string;
+  day: string;
+  date: string;
+  isToday: boolean;
 };
 
 const services: Service[] = [
@@ -80,34 +87,30 @@ const getDateKey = (date: Date) => {
 };
 
 export default function Home() {
-  const [today, setToday] = useState<Date | null>(null);
   const [isBookingOpen, setIsBookingOpen] = useState(false);
   const [selectedService, setSelectedService] = useState(services[0].id);
   const [selectedDate, setSelectedDate] = useState("");
   const [selectedTime, setSelectedTime] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const [calendarDays, setCalendarDays] = useState<CalendarDay[]>([]);
 
   useEffect(() => {
     const currentDate = new Date();
-    setToday(currentDate);
     setSelectedDate(getDateKey(currentDate));
+    setCalendarDays(
+      Array.from({ length: 14 }, (_, index) => {
+        const date = new Date(currentDate);
+        date.setHours(12, 0, 0, 0);
+        date.setDate(currentDate.getDate() + index);
+        return {
+          key: getDateKey(date),
+          day: weekDays[date.getDay()],
+          date: formatDay(date),
+          isToday: date.toDateString() === currentDate.toDateString(),
+        };
+      }),
+    );
   }, []);
-
-  const calendarDays = useMemo(() => {
-    if (!today) return [];
-
-    return Array.from({ length: 14 }, (_, index) => {
-      const date = new Date(today);
-      date.setHours(12, 0, 0, 0);
-      date.setDate(today.getDate() + index);
-      return {
-        key: getDateKey(date),
-        day: weekDays[date.getDay()],
-        date: formatDay(date),
-        isToday: date.toDateString() === today.toDateString(),
-      };
-    });
-  }, [today]);
 
   const openBooking = (serviceId = selectedService) => {
     setSelectedService(serviceId);
@@ -136,7 +139,7 @@ export default function Home() {
           <a href="#about">Về Tuệ Tuệ</a>
         </nav>
         <button className="luna-nav-cta" onClick={() => openBooking()}>
-          Đặt lịch <b>↗</b>
+          Đặt lịch <b></b>
         </button>
       </header>
 
@@ -154,7 +157,7 @@ export default function Home() {
           </p>
           <div className="luna-actions">
             <button className="luna-primary" onClick={() => openBooking()}>
-              Đặt lịch của bạn <span>↗</span>
+              Đặt lịch của bạn <span></span>
             </button>
             <a className="luna-text-link" href="#services">
               Xem dịch vụ <span>↓</span>
@@ -218,11 +221,7 @@ export default function Home() {
             <p className="luna-overline">CHOOSE YOUR RITUAL</p>
             <h2>Dịch vụ của Tuệ Tuệ</h2>
           </div>
-          <p>
-            Chọn một nghi thức
-            <br />
-            cho hôm nay.
-          </p>
+          <p style={{ fontSize: "15px" }}>Chọn một nghi thức cho hôm nay.</p>
         </div>
         <div className="luna-service-list">
           {services.map((service, index) => (
@@ -247,7 +246,7 @@ export default function Home() {
                   {service.price}
                   <small>{service.duration}</small>
                 </span>
-                <b>Đặt gói này ↗</b>
+                <b>Đặt gói này </b>
               </span>
             </button>
           ))}
@@ -268,7 +267,7 @@ export default function Home() {
             trung. Mọi thứ ở Tuệ Tuệ được thiết kế để bạn chậm lại.
           </p>
           <button className="luna-text-link" onClick={() => openBooking()}>
-            Ghé thăm Tuệ Tuệ <span>↗</span>
+            Ghé thăm Tuệ Tuệ <span></span>
           </button>
         </div>
       </section>
@@ -328,7 +327,7 @@ export default function Home() {
                   className="luna-primary"
                   onClick={() => setIsBookingOpen(false)}
                 >
-                  Đóng cửa sổ <span>↗</span>
+                  Đóng cửa sổ <span></span>
                 </button>
               </div>
             ) : (
@@ -460,7 +459,7 @@ export default function Home() {
                     type="submit"
                     disabled={!selectedTime}
                   >
-                    Xác nhận đặt lịch <span>↗</span>
+                    Xác nhận đặt lịch <span></span>
                   </button>
                 </form>
               </>

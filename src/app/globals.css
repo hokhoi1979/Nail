@@ -2223,3 +2223,331 @@
     text-align: center;
   }
 }
+
+@media (max-width: 1100px) {
+  .luna-nav {
+    padding-left: 24px;
+    padding-right: 24px;
+  }
+
+  .luna-hero {
+    gap: 34px;
+    padding-left: 24px;
+    padding-right: 24px;
+  }
+
+  .luna-hero h1 {
+    font-size: clamp(54px, 7vw, 78px);
+  }
+
+  .luna-service-list {
+    display: flex;
+    gap: 16px;
+    overflow-x: auto;
+    padding-bottom: 12px;
+    scroll-snap-type: x mandatory;
+  }
+
+  .luna-service-list::-webkit-scrollbar {
+    height: 5px;
+  }
+
+  .luna-service-list::-webkit-scrollbar-thumb {
+    background: #c99b8f;
+    border-radius: 999px;
+  }
+
+  .luna-service {
+    flex: 0 0 min(30vw, 280px);
+    scroll-snap-align: start;
+  }
+
+  .luna-intro,
+  .luna-experience {
+    padding-left: 24px;
+    padding-right: 24px;
+  }
+
+  .luna-intro-photo {
+    height: 300px;
+    right: 2%;
+    width: 300px;
+  }
+
+  .luna-footer {
+    grid-template-columns: 1fr 1fr;
+    padding-left: 24px;
+    padding-right: 24px;
+  }
+}
+
+@media (max-width: 750px) {
+  .luna-nav {
+    gap: 14px;
+    padding: 16px 18px;
+  }
+
+  .luna-brand {
+    gap: 7px;
+  }
+
+  .luna-brand > span {
+    height: 34px;
+    width: 34px;
+  }
+
+  .luna-brand strong {
+    font-size: 11px;
+  }
+
+  .luna-brand i {
+    font-size: 13px;
+  }
+
+  .luna-nav-cta {
+    font-size: 12px;
+    min-width: 104px;
+    padding: 12px 15px;
+  }
+
+  .luna-hero {
+    display: block;
+    min-height: 0;
+    padding: 48px 20px 70px;
+  }
+
+  .luna-hero-copy {
+    padding: 0;
+  }
+
+  .luna-hero h1 {
+    font-size: clamp(48px, 14vw, 68px);
+    margin-bottom: 24px;
+  }
+
+  .luna-lead {
+    max-width: 430px;
+  }
+
+  .luna-actions {
+    align-items: flex-start;
+    flex-wrap: wrap;
+    gap: 18px;
+  }
+
+  .luna-proof {
+    margin-top: 40px;
+  }
+
+  .luna-hero-art {
+    margin-top: 48px;
+    height: 330px;
+    min-height: 330px;
+  }
+
+  .luna-main-photo {
+    height: 330px;
+    margin-left: 10%;
+    width: 80%;
+  }
+
+  .luna-photo-small {
+    bottom: 8px;
+    height: 108px;
+    width: 108px;
+  }
+
+  .luna-round-note {
+    right: 2%;
+    top: 8%;
+    transform: rotate(8deg) scale(.9);
+  }
+
+  .luna-intro {
+    display: block;
+    padding: 62px 20px 70px;
+  }
+
+  .luna-intro h2 {
+    font-size: clamp(42px, 12vw, 58px);
+  }
+
+  .luna-intro > div {
+    margin-top: 28px;
+    padding-left: 0;
+  }
+
+  .luna-intro-photo {
+    height: 230px;
+    margin: 34px auto 0;
+    position: relative !important;
+    right: auto;
+    top: auto;
+    width: 230px;
+  }
+
+  .luna-services {
+    padding: 70px 20px;
+  }
+
+  .luna-section-head h2 {
+    font-size: 42px;
+  }
+
+  .luna-service {
+    flex-basis: 230px;
+    min-height: 320px;
+  }
+
+  .luna-service-image {
+    height: 155px;
+  }
+
+  .luna-service-no {
+    font-size: 11px;
+    margin-top: 16px;
+  }
+
+  .luna-service-info {
+    min-height: 72px;
+    padding-top: 2px;
+  }
+
+  .luna-service-info strong {
+    font-size: 21px;
+  }
+
+  .luna-service-info small {
+      display: -webkit-box !important;
+    font-size: 11px;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+      visibility: visible !important;
+  }
+
+  .luna-service-meta {
+    margin-bottom: 17px;
+  }
+
+  .luna-service-price {
+    font-size: 15px;
+  }
+
+  .luna-experience {
+    display: block;
+    padding: 72px 20px;
+  }
+
+  .luna-experience-image {
+    min-height: 330px;
+  }
+
+  .luna-experience-copy {
+    padding: 48px 0 0;
+  }
+
+  .luna-experience-copy h2 {
+    font-size: 46px;
+  }
+
+  .luna-booking {
+    padding: 58px 20px;
+  }
+
+  .luna-booking h2 {
+    font-size: 40px;
+  }
+
+  .luna-booking-cta {
+    font-size: 13px;
+    padding: 17px 24px;
+  }
+
+  .luna-footer {
+    grid-template-columns: 1fr;
+    padding: 34px 20px;
+  }
+}
+
+@media (max-width: 560px) {
+  .luna-nav {
+    align-items: center;
+  }
+
+  .luna-brand strong {
+    letter-spacing: .1em;
+  }
+
+  .luna-nav-cta {
+    min-width: 92px;
+    padding: 11px 12px;
+  }
+
+  .luna-hero h1 {
+    font-size: 48px;
+  }
+
+  .luna-actions .luna-primary {
+    font-size: 12px;
+    padding: 15px 20px;
+  }
+
+  .luna-proof {
+    align-items: flex-start;
+  }
+
+  .luna-proof small {
+    font-size: 8px;
+  }
+
+  .booking-overlay {
+    padding: 10px;
+  }
+
+  .booking-modal {
+    max-height: 96vh;
+    padding: 42px 18px 26px;
+  }
+
+  .booking-heading h2,
+  .booking-success h2 {
+    font-size: 46px;
+  }
+
+  .booking-step {
+    gap: 10px;
+    grid-template-columns: 22px 1fr;
+    padding: 22px 0;
+  }
+
+  .date-picker {
+    gap: 4px;
+  }
+
+  .date-option {
+    min-height: 58px;
+    padding: 8px 2px 5px;
+  }
+
+  .date-option strong {
+    font-size: 17px;
+  }
+
+  .date-option small {
+    font-size: 8px;
+  }
+
+  .field-row {
+    grid-template-columns: 1fr;
+  }
+
+  .service-choice-options {
+    gap: 5px;
+  }
+
+  .service-choice-options .service-choice-option {
+    font-size: 11px;
+    padding: 12px 4px;
+  }
+}
