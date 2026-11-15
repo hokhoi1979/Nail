@@ -105,7 +105,7 @@ export function BookingModal({
       time: selectedTime,
       service: selectedService,
     });
-
+    //
     const bookingData = {
       customer_name: name.trim(),
       customer_phone: phone.trim(),
