@@ -50,7 +50,10 @@ export default function Home() {
           <a href="#about">Về Tuệ Tuệ</a>
         </nav>
         <div className="luna-nav-actions">
-          <button className="luna-nav-history" onClick={() => setIsHistoryOpen(true)}>
+          <button
+            className="luna-nav-history"
+            onClick={() => setIsHistoryOpen(true)}
+          >
             Lịch sử
           </button>
           <button className="luna-nav-cta" onClick={() => openBooking()}>
@@ -73,7 +76,7 @@ export default function Home() {
           </p>
           <div className="luna-actions">
             <button className="luna-primary" onClick={() => openBooking()}>
-              Đặt lịch của bạn <span></span>
+              Đặt lịch <span></span>
             </button>
             <a className="luna-text-link" href="#services">
               Xem dịch vụ <span>↓</span>

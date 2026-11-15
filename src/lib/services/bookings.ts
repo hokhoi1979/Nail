@@ -2,6 +2,8 @@ import { supabase } from "../apis/client";
 import { endpoints } from "../apis/endpoints";
 import { ServiceItem } from "./services";
 
+export type ServiceType = "nail" | "gội đầu" | "nail + gội đầu";
+
 // 1. Khớp chính xác các cột được truyền lên bảng `bookings`
 export interface CreateBookingPayload {
   customer_name: string;
@@ -10,9 +12,21 @@ export interface CreateBookingPayload {
   start_time: string;
   end_time: string;
   total_estimated_price: number;
+  service_type: ServiceType;
 }
 
-// 2. Khớp chính xác các cột trả về từ bảng `bookings` + join `booking_services`
+export interface BookingServiceResponse {
+  id: string;
+  booking_id: string;
+  service_id: string;
+  price_at_booking: number;
+  duration_at_booking: number;
+  services: {
+    id: string;
+    name: string;
+  } | null;
+}
+
 export interface BookingResponse {
   id: string;
   customer_name: string;
@@ -21,6 +35,7 @@ export interface BookingResponse {
   start_time: string;
   end_time: string;
   total_estimated_price: number;
+  service_type: ServiceType;
   status:
     | "pending"
     | "confirmed"
@@ -32,17 +47,32 @@ export interface BookingResponse {
   cancel_reason: string | null;
   created_at: string;
   updated_at: string;
-  booking_services?: {
-    id: string;
-    booking_id: string;
-    service_id: string;
-    price_at_booking: number;
-    duration_at_booking: number;
-    services?: {
-      name: string;
-      description: string | null;
-    };
-  }[];
+
+  // Bổ sung quan hệ dịch vụ
+  booking_services: BookingServiceResponse[];
+}
+
+// 2. Khớp chính xác các cột trả về từ bảng `bookings`
+export interface BookingResponse {
+  id: string;
+  customer_name: string;
+  customer_phone: string;
+  customer_note: string | null;
+  start_time: string;
+  end_time: string;
+  total_estimated_price: number;
+  service_type: ServiceType;
+  status:
+    | "pending"
+    | "confirmed"
+    | "in_progress"
+    | "completed"
+    | "cancelled"
+    | "no_show";
+  cancelled_by: "customer" | "admin" | null;
+  cancel_reason: string | null;
+  created_at: string;
+  updated_at: string;
 }
 
 export const bookingService = {
@@ -61,6 +91,7 @@ export const bookingService = {
         start_time: bookingData.start_time,
         end_time: bookingData.end_time,
         total_estimated_price: bookingData.total_estimated_price,
+        service_type: bookingData.service_type,
         status: "pending",
       })
       .select()
@@ -90,19 +121,7 @@ export const bookingService = {
   getById: async (bookingId: string): Promise<BookingResponse> => {
     const { data, error } = await supabase
       .from(endpoints.bookings)
-      .select(
-        `
-        *,
-        booking_services (
-          id,
-          booking_id,
-          service_id,
-          price_at_booking,
-          duration_at_booking,
-          services ( name, description )
-        )
-      `,
-      )
+      .select("*")
       .eq("id", bookingId)
       .single();
 
@@ -146,19 +165,7 @@ export const bookingService = {
   getAll: async (): Promise<BookingResponse[]> => {
     const { data, error } = await supabase
       .from(endpoints.bookings)
-      .select(
-        `
-        *,
-        booking_services (
-          id,
-          booking_id,
-          service_id,
-          price_at_booking,
-          duration_at_booking,
-          services ( name, description )
-        )
-      `,
-      )
+      .select("*")
       .order("created_at", { ascending: false });
 
     if (error) {

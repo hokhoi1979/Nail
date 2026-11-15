@@ -2,6 +2,7 @@
 
 import { useCreateBooking } from "@/hooks/useBookings";
 import { useActiveServices } from "@/hooks/useServices";
+import type { ServiceType } from "@/lib/services/bookings";
 import { useState } from "react";
 import type { FormEvent } from "react";
 
@@ -32,6 +33,11 @@ const serviceIds = {
   nail: "32ecf2e5-06cd-4c40-8fb9-cb6edfdb1b51",
   headSpa: "f3a642ab-d9a6-4297-8028-8941ee3b55f6",
   both: "016b38ff-f227-462d-9f61-12066c73d60f",
+};
+const serviceTypeById: Record<string, ServiceType> = {
+  [serviceIds.nail]: "nail",
+  [serviceIds.headSpa]: "gội đầu",
+  [serviceIds.both]: "nail + gội đầu",
 };
 
 const formatDay = (date: Date) =>
@@ -79,10 +85,11 @@ export function BookingModal({
   const selectedServiceItem = services.find(
     (service) => service.id === selectedService,
   );
+  const selectedServiceType = serviceTypeById[selectedService];
 
   const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    if (!selectedTime || !selectedServiceItem) {
+    if (!selectedTime || !selectedServiceItem || !selectedServiceType) {
       console.error("Không thể đặt lịch: dịch vụ hoặc khung giờ chưa hợp lệ.");
       return;
     }
@@ -113,6 +120,7 @@ export function BookingModal({
       start_time: startDate.toISOString(),
       end_time: endDate.toISOString(),
       total_estimated_price: selectedServiceItem.price,
+      service_type: selectedServiceType,
     };
 
     createBooking.mutate(
