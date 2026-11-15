@@ -4,7 +4,12 @@ import {
   QueryClient,
   QueryClientProvider,
 } from "@tanstack/react-query";
-import { useState } from "react";
+import { App } from "antd";
+import { useState, useSyncExternalStore } from "react";
+
+const emptySubscribe = () => () => {};
+const getClientSnapshot = () => true;
+const getServerSnapshot = () => false;
 
 export default function Providers({
   children,
@@ -22,10 +27,15 @@ export default function Providers({
         },
       }),
   );
+  const isHydrated = useSyncExternalStore(
+      emptySubscribe,
+      getClientSnapshot,
+      getServerSnapshot,
+  );
 
   return (
     <QueryClientProvider client={queryClient}>
-      {children}
+        {isHydrated ? <App>{children}</App> : children}
     </QueryClientProvider>
   );
 }

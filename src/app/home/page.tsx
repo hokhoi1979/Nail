@@ -1,127 +1,38 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import type { FormEvent } from "react";
+import { useActiveServices } from "@/hooks/useServices";
+import { BookingModal } from "@/components/bookingModal/page";
+import { HistoryModal } from "@/components/historyModal/page";
+import { useState } from "react";
 
-type Service = {
-  id: string;
-  name: string;
-  category: string;
-  description: string;
-  duration: string;
-  price: string;
-  image: string;
-};
-
-type CalendarDay = {
-  key: string;
-  day: string;
-  date: string;
-  isToday: boolean;
-};
-
-const services: Service[] = [
-  {
-    id: "nail-signature",
-    name: "Tuệ Tuệ Signature",
-    category: "Nail",
-    description: "Cắt da, tạo form và sơn gel màu bạn yêu thích.",
-    duration: "60 phút",
-    price: "350.000đ",
-    image:
-      "https://images.unsplash.com/photo-1604654894610-df63bc536371?auto=format&fit=crop&w=900&q=85",
-  },
-  {
-    id: "nail-art",
-    name: "Nail Art",
-    category: "Nail",
-    description: "Bộ móng được thiết kế riêng, tỉ mỉ đến từng nét.",
-    duration: "90 phút",
-    price: "550.000đ",
-    image:
-      "https://images.unsplash.com/photo-1607779097040-26e80aa78e66?auto=format&fit=crop&w=900&q=85",
-  },
-  {
-    id: "head-spa",
-    name: "Gội đầu dưỡng sinh",
-    category: "Thư giãn",
-    description: "Thả lỏng cơ thể với liệu trình gội và massage nhẹ nhàng.",
-    duration: "75 phút",
-    price: "290.000đ",
-    image:
-      "https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=900&q=85",
-  },
-  {
-    id: "combo",
-    name: "Tuệ Tuệ Reset",
-    category: "Combo",
-    description: "Một buổi chăm sóc trọn vẹn cho bạn rời đi thật nhẹ.",
-    duration: "150 phút",
-    price: "690.000đ",
-    image:
-      "https://images.unsplash.com/photo-1519014816548-bf5fe059798b?auto=format&fit=crop&w=900&q=85",
-  },
+const fallbackImages = [
+  "https://images.unsplash.com/photo-1604654894610-df63bc536371?auto=format&fit=crop&w=900&q=85",
+  "https://images.unsplash.com/photo-1607779097040-26e80aa78e66?auto=format&fit=crop&w=900&q=85",
+  "https://images.unsplash.com/photo-1540555700478-4be289fbecef?auto=format&fit=crop&w=900&q=85",
+  "https://images.unsplash.com/photo-1519014816548-bf5fe059798b?auto=format&fit=crop&w=900&q=85",
 ];
 
-const timeSlots = [
-  "09:00",
-  "10:30",
-  "12:00",
-  "13:30",
-  "15:00",
-  "16:30",
-  "18:00",
-];
-const weekDays = ["CN", "T2", "T3", "T4", "T5", "T6", "T7"];
-
-const formatDay = (date: Date) =>
-  new Intl.DateTimeFormat("vi-VN", { day: "2-digit", month: "2-digit" }).format(
-    date,
-  );
-
-const getDateKey = (date: Date) => {
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const day = String(date.getDate()).padStart(2, "0");
-  return `${year}-${month}-${day}`;
-};
+const formatPrice = (price: number) =>
+  new Intl.NumberFormat("vi-VN", {
+    style: "currency",
+    currency: "VND",
+    maximumFractionDigits: 0,
+  }).format(price);
 
 export default function Home() {
   const [isBookingOpen, setIsBookingOpen] = useState(false);
-  const [selectedService, setSelectedService] = useState(services[0].id);
-  const [selectedDate, setSelectedDate] = useState("");
-  const [selectedTime, setSelectedTime] = useState("");
-  const [submitted, setSubmitted] = useState(false);
-  const [calendarDays, setCalendarDays] = useState<CalendarDay[]>([]);
+  const [isHistoryOpen, setIsHistoryOpen] = useState(false);
+  const [selectedService, setSelectedService] = useState("");
 
-  useEffect(() => {
-    const currentDate = new Date();
-    setSelectedDate(getDateKey(currentDate));
-    setCalendarDays(
-      Array.from({ length: 14 }, (_, index) => {
-        const date = new Date(currentDate);
-        date.setHours(12, 0, 0, 0);
-        date.setDate(currentDate.getDate() + index);
-        return {
-          key: getDateKey(date),
-          day: weekDays[date.getDay()],
-          date: formatDay(date),
-          isToday: date.toDateString() === currentDate.toDateString(),
-        };
-      }),
-    );
-  }, []);
+  const {
+    data: services = [],
+    isLoading: isServicesLoading,
+    error: servicesError,
+  } = useActiveServices();
 
   const openBooking = (serviceId = selectedService) => {
     setSelectedService(serviceId);
-    setSubmitted(false);
     setIsBookingOpen(true);
-  };
-
-  const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    if (!selectedTime) return;
-    setSubmitted(true);
   };
 
   return (
@@ -138,9 +49,14 @@ export default function Home() {
           <a href="#experience">Không gian</a>
           <a href="#about">Về Tuệ Tuệ</a>
         </nav>
-        <button className="luna-nav-cta" onClick={() => openBooking()}>
-          Đặt lịch <b></b>
-        </button>
+        <div className="luna-nav-actions">
+          <button className="luna-nav-history" onClick={() => setIsHistoryOpen(true)}>
+            Lịch sử
+          </button>
+          <button className="luna-nav-cta" onClick={() => openBooking()}>
+            Đặt lịch <b></b>
+          </button>
+        </div>
       </header>
 
       <section className="luna-hero" id="home">
@@ -224,32 +140,48 @@ export default function Home() {
           <p style={{ fontSize: "15px" }}>Chọn một nghi thức cho hôm nay.</p>
         </div>
         <div className="luna-service-list">
-          {services.map((service, index) => (
-            <button
-              className="luna-service"
-              onClick={() => openBooking(service.id)}
-              key={service.id}
-            >
-              <span
-                className="luna-service-image"
-                style={{ backgroundImage: `url(${service.image})` }}
-              />
-              <span className="luna-service-no">
-                0{index + 1} · {service.category}
-              </span>
-              <span className="luna-service-info">
-                <strong>{service.name}</strong>
-                <small>{service.description}</small>
-              </span>
-              <span className="luna-service-meta">
-                <span className="luna-service-price">
-                  {service.price}
-                  <small>{service.duration}</small>
+          {isServicesLoading ? (
+            <p className="luna-loading">Đang tải dịch vụ...</p>
+          ) : servicesError ? (
+            <p className="luna-error">
+              Không thể tải dịch vụ. Vui lòng thử lại sau.
+            </p>
+          ) : (
+            services.slice(0, 4).map((service, index) => (
+              <button
+                className="luna-service"
+                onClick={() => openBooking(service.id)}
+                key={service.id}
+              >
+                <span
+                  className="luna-service-image"
+                  style={{
+                    backgroundImage: `url(${service.image_url || fallbackImages[index % fallbackImages.length]})`,
+                  }}
+                />
+                <span className="luna-service-no">
+                  0{index + 1} ·{" "}
+                  {service.name.toLowerCase().includes("gội")
+                    ? "Gội đầu"
+                    : "Nail"}
                 </span>
-                <b>Đặt gói này </b>
-              </span>
-            </button>
-          ))}
+                <span className="luna-service-info">
+                  <strong>{service.name}</strong>
+                  <small>
+                    {service.description ||
+                      "Chăm sóc tỉ mỉ theo nhu cầu của bạn."}
+                  </small>
+                </span>
+                <span className="luna-service-meta">
+                  <span className="luna-service-price">
+                    {formatPrice(service.price)}
+                    <small>{service.duration_minutes} phút</small>
+                  </span>
+                  <b>Đặt gói này </b>
+                </span>
+              </button>
+            ))
+          )}
         </div>
       </section>
 
@@ -293,179 +225,14 @@ export default function Home() {
       </footer>
 
       {isBookingOpen ? (
-        <div
-          className="booking-overlay"
-          role="dialog"
-          aria-modal="true"
-          aria-labelledby="booking-title"
-          onMouseDown={(event) =>
-            event.target === event.currentTarget && setIsBookingOpen(false)
-          }
-        >
-          <div className="booking-modal">
-            <button
-              className="booking-close"
-              aria-label="Đóng"
-              onClick={() => setIsBookingOpen(false)}
-            >
-              ×
-            </button>
-            {submitted ? (
-              <div className="booking-success">
-                <span className="success-mark">✓</span>
-                <p className="luna-overline">TUỆ TUỆ ĐÃ NHẬN ĐƯỢC LỜI HẸN</p>
-                <h2>
-                  Hẹn gặp bạn
-                  <br />
-                  <em>thật sớm.</em>
-                </h2>
-                <p>
-                  Thông tin đặt lịch của bạn đã được ghi nhận. Tuệ Tuệ sẽ liên
-                  hệ để xác nhận trong ít phút.
-                </p>
-                <button
-                  className="luna-primary"
-                  onClick={() => setIsBookingOpen(false)}
-                >
-                  Đóng cửa sổ <span></span>
-                </button>
-              </div>
-            ) : (
-              <>
-                <div className="booking-heading">
-                  <p className="luna-overline">YOUR NEXT PAUSE</p>
-                  <h2 id="booking-title">
-                    Đặt lịch
-                    <br />
-                    <em>của bạn.</em>
-                  </h2>
-                  <p>Chọn ngày và khung giờ phù hợp trong 2 tuần tới.</p>
-                </div>
-                <form onSubmit={handleSubmit}>
-                  <div className="booking-step">
-                    <span>01</span>
-                    <div>
-                      <label>Chọn ngày · 2 tuần tới</label>
-                      <div className="date-picker">
-                        {calendarDays.map((date) => (
-                          <button
-                            type="button"
-                            className={
-                              selectedDate === date.key
-                                ? "date-option active"
-                                : "date-option"
-                            }
-                            key={date.key}
-                            onClick={() => setSelectedDate(date.key)}
-                          >
-                            <small>{date.day}</small>
-                            <strong>{date.date.split("/")[0]}</strong>
-                            {date.isToday && <i>Hôm nay</i>}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                  <div className="booking-step">
-                    <span>02</span>
-                    <div>
-                      <label>Chọn khung giờ</label>
-                      <div className="time-grid">
-                        {timeSlots.map((time, index) => (
-                          <button
-                            type="button"
-                            className={
-                              selectedTime === time
-                                ? "time-option active"
-                                : "time-option"
-                            }
-                            key={time}
-                            onClick={() => setSelectedTime(time)}
-                            disabled={index === 2}
-                          >
-                            {time}
-                            {index === 2 && <small>Đã kín</small>}
-                          </button>
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                  <div className="booking-step">
-                    <span>03</span>
-                    <div className="booking-fields">
-                      <label>Thông tin của bạn</label>
-                      <div className="field-row">
-                        <input required name="name" placeholder="Tên của bạn" />
-                        <input
-                          required
-                          name="phone"
-                          type="tel"
-                          placeholder="Số điện thoại"
-                        />
-                      </div>
-                      <div className="service-choice">
-                        <span className="service-choice-label">
-                          Bạn quan tâm đến
-                        </span>
-                        <div
-                          className="service-choice-options"
-                          role="group"
-                          aria-label="Chọn gói dịch vụ"
-                        >
-                          <button
-                            type="button"
-                            className={
-                              selectedService === "nail-signature"
-                                ? "service-choice-option active"
-                                : "service-choice-option"
-                            }
-                            onClick={() => setSelectedService("nail-signature")}
-                          >
-                            Nail
-                          </button>
-                          <button
-                            type="button"
-                            className={
-                              selectedService === "head-spa"
-                                ? "service-choice-option active"
-                                : "service-choice-option"
-                            }
-                            onClick={() => setSelectedService("head-spa")}
-                          >
-                            Gội đầu
-                          </button>
-                          <button
-                            type="button"
-                            className={
-                              selectedService === "both"
-                                ? "service-choice-option active"
-                                : "service-choice-option"
-                            }
-                            onClick={() => setSelectedService("both")}
-                          >
-                            Nail + Gội đầu
-                          </button>
-                        </div>
-                      </div>
-                      <textarea
-                        name="note"
-                        rows={3}
-                        placeholder="Bạn muốn Tuệ Tuệ lưu ý điều gì? (không bắt buộc)"
-                      />
-                    </div>
-                  </div>
-                  <button
-                    className="booking-submit"
-                    type="submit"
-                    disabled={!selectedTime}
-                  >
-                    Xác nhận đặt lịch <span></span>
-                  </button>
-                </form>
-              </>
-            )}
-          </div>
-        </div>
+        <BookingModal
+          selectedService={selectedService}
+          onServiceChange={setSelectedService}
+          onClose={() => setIsBookingOpen(false)}
+        />
+      ) : null}
+      {isHistoryOpen ? (
+        <HistoryModal onClose={() => setIsHistoryOpen(false)} />
       ) : null}
     </main>
   );

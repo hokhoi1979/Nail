@@ -19,13 +19,13 @@ export const useBookingAll = () => {
   });
 };
 
-export const useBookingByCode = (bookingCode: string) => {
-  return useQuery({
-    queryKey: ["bookings", bookingCode],
-    queryFn: () => bookingService.getByCode(bookingCode),
-    enabled: !!bookingCode,
-  });
-};
+// export const useBookingByCode = (bookingCode: string) => {
+//   return useQuery({
+//     queryKey: ["bookings", bookingCode],
+//     queryFn: () => bookingService.getByCode(bookingCode),
+//     enabled: !!bookingCode,
+//   });
+// };
 
 // Lấy các khung giờ bận để hiển thị / chặn trên Calendar
 export const useBusySlots = (startDate: string, endDate: string) => {
@@ -55,7 +55,7 @@ export const useCreateBooking = () => {
     }) => bookingService.create(bookingData, selectedServices),
     onSuccess: (data) => {
       queryClient.invalidateQueries({ queryKey: ["bookings"] });
-      message.success(`Đặt lịch thành công! Mã đơn: ${data.booking_code}`);
+      message.success(`Đặt lịch thành công! Mã đơn: ${data.id}`);
     },
     onError: (error: Error) => {
       message.error(error?.message || "Đặt lịch thất bại, vui lòng thử lại!");

@@ -2,18 +2,19 @@ import { supabase } from "../apis/client";
 import { endpoints } from "../apis/endpoints";
 import { ServiceItem } from "./services";
 
+// 1. Khớp chính xác các cột được truyền lên bảng `bookings`
 export interface CreateBookingPayload {
   customer_name: string;
   customer_phone: string;
-  customer_note?: string;
+  customer_note?: string | null;
   start_time: string;
   end_time: string;
   total_estimated_price: number;
 }
 
+// 2. Khớp chính xác các cột trả về từ bảng `bookings` + join `booking_services`
 export interface BookingResponse {
   id: string;
-  booking_code: string;
   customer_name: string;
   customer_phone: string;
   customer_note: string | null;
@@ -28,6 +29,20 @@ export interface BookingResponse {
     | "cancelled"
     | "no_show";
   cancelled_by: "customer" | "admin" | null;
+  cancel_reason: string | null;
+  created_at: string;
+  updated_at: string;
+  booking_services?: {
+    id: string;
+    booking_id: string;
+    service_id: string;
+    price_at_booking: number;
+    duration_at_booking: number;
+    services?: {
+      name: string;
+      description: string | null;
+    };
+  }[];
 }
 
 export const bookingService = {
@@ -36,11 +51,16 @@ export const bookingService = {
     bookingData: CreateBookingPayload,
     selectedServices: ServiceItem[],
   ): Promise<BookingResponse> => {
-    // 1. Tạo đơn trong bảng bookings
+    // Bước 1: Tạo đơn trong bảng `bookings`
     const { data: booking, error: bookingErr } = await supabase
       .from(endpoints.bookings)
       .insert({
-        ...bookingData,
+        customer_name: bookingData.customer_name,
+        customer_phone: bookingData.customer_phone,
+        customer_note: bookingData.customer_note || null,
+        start_time: bookingData.start_time,
+        end_time: bookingData.end_time,
+        total_estimated_price: bookingData.total_estimated_price,
         status: "pending",
       })
       .select()
@@ -48,7 +68,7 @@ export const bookingService = {
 
     if (bookingErr) throw bookingErr;
 
-    // 2. Tạo danh sách dịch vụ đi kèm trong booking_services
+    // Bước 2: Tạo danh sách dịch vụ đi kèm trong bảng `booking_services`
     const serviceItems = selectedServices.map((service) => ({
       booking_id: booking.id,
       service_id: service.id,
@@ -56,8 +76,9 @@ export const bookingService = {
       duration_at_booking: service.duration_minutes,
     }));
 
+    // SỬA LỖI Ở ĐÂY: Trỏ đúng vào bảng "booking_services" thay vì endpoints.services
     const { error: serviceErr } = await supabase
-      .from(endpoints.bookingServices)
+      .from("booking_services")
       .insert(serviceItems);
 
     if (serviceErr) throw serviceErr;
@@ -65,8 +86,8 @@ export const bookingService = {
     return booking;
   },
 
-  // Tra cứu theo mã booking_code
-  getByCode: async (bookingCode: string): Promise<BookingResponse> => {
+  // Tra cứu theo ID đơn (vì bảng bookings của bạn hiện không có cột booking_code)
+  getById: async (bookingId: string): Promise<BookingResponse> => {
     const { data, error } = await supabase
       .from(endpoints.bookings)
       .select(
@@ -74,28 +95,31 @@ export const bookingService = {
         *,
         booking_services (
           id,
+          booking_id,
+          service_id,
           price_at_booking,
           duration_at_booking,
           services ( name, description )
         )
       `,
       )
-      .eq("booking_code", bookingCode)
+      .eq("id", bookingId)
       .single();
 
     if (error) throw error;
     return data;
   },
 
-  // Khách tự hủy đơn pending
-  cancelByCustomer: async (bookingCode: string) => {
+  // Khách tự hủy đơn pending (theo id)
+  cancelByCustomer: async (bookingId: string, cancelReason?: string) => {
     const { data, error } = await supabase
       .from(endpoints.bookings)
       .update({
         status: "cancelled",
         cancelled_by: "customer",
+        cancel_reason: cancelReason || null,
       })
-      .eq("booking_code", bookingCode)
+      .eq("id", bookingId)
       .eq("status", "pending")
       .select();
 
@@ -120,7 +144,23 @@ export const bookingService = {
   },
 
   getAll: async (): Promise<BookingResponse[]> => {
-    const { data, error } = await supabase.from(endpoints.bookings).select();
+    const { data, error } = await supabase
+      .from(endpoints.bookings)
+      .select(
+        `
+        *,
+        booking_services (
+          id,
+          booking_id,
+          service_id,
+          price_at_booking,
+          duration_at_booking,
+          services ( name, description )
+        )
+      `,
+      )
+      .order("created_at", { ascending: false });
+
     if (error) {
       throw new Error(
         [
