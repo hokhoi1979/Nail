@@ -18,6 +18,7 @@ type BookingModalProps = {
   onServiceChange: (serviceId: string) => void;
   onClose: () => void;
 };
+const storageBooking = "nail_Booking";
 
 const timeSlots = [
   "09:00",
@@ -122,15 +123,19 @@ export function BookingModal({
       total_estimated_price: selectedServiceItem.price,
       service_type: selectedServiceType,
     };
-
     createBooking.mutate(
       {
         bookingData,
         selectedServices: [selectedServiceItem],
       },
       {
-        onSuccess: () => setSubmitted(true),
-        onError: (error) => console.error("Booking error:", error),
+        onSuccess: () => {
+          setSubmitted(true);
+        },
+
+        onError: (error) => {
+          console.error("Booking error:", error);
+        },
       },
     );
   };
@@ -143,7 +148,21 @@ export function BookingModal({
       aria-labelledby="booking-title"
       onMouseDown={(event) => event.target === event.currentTarget && onClose()}
     >
-      <div className="booking-modal">
+      <div
+        className="
+    booking-modal
+    overflow-y-auto
+    rounded-[28px]
+    [scrollbar-width:thin]
+    [scrollbar-color:#d6b8ad_transparent]
+    [&::-webkit-scrollbar]:w-[6px]
+    [&::-webkit-scrollbar-track]:bg-transparent
+    [&::-webkit-scrollbar-thumb]:rounded-full
+    [&::-webkit-scrollbar-thumb]:bg-[#d6b8ad]
+    [&::-webkit-scrollbar-thumb:hover]:bg-[#ae8174]
+    [&::-webkit-scrollbar-button]:hidden
+  "
+      >
         <button className="booking-close" aria-label="Đóng" onClick={onClose}>
           ×
         </button>
@@ -170,8 +189,7 @@ export function BookingModal({
               <p className="luna-overline">YOUR NEXT PAUSE</p>
               <h2 id="booking-title">
                 Đặt lịch
-                <br />
-                <em>của bạn.</em>
+                <em> của bạn.</em>
               </h2>
               <p>Chọn ngày và khung giờ phù hợp trong 2 tuần tới.</p>
             </div>

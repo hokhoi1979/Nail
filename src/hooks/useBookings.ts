@@ -39,7 +39,7 @@ export const useBusySlots = (startDate: string, endDate: string) => {
 // ========================================================
 // MUTATIONS
 // ========================================================
-
+const STORAGE_KEY = "nail_booking_ids";
 // Khách tạo đơn đặt lịch
 export const useCreateBooking = () => {
   const queryClient = useQueryClient();
@@ -54,8 +54,22 @@ export const useCreateBooking = () => {
       selectedServices: ServiceItem[];
     }) => bookingService.create(bookingData, selectedServices),
     onSuccess: (data) => {
+      if (typeof window !== "undefined" && data?.id) {
+        const savedIds: string[] = JSON.parse(
+          localStorage.getItem(STORAGE_KEY) || "[]",
+        );
+
+        if (!savedIds.includes(data.id)) {
+          localStorage.setItem(
+            STORAGE_KEY,
+            JSON.stringify([data.id, ...savedIds]),
+          );
+        }
+      }
+
+      // 2. Làm mới danh sách bookings
       queryClient.invalidateQueries({ queryKey: ["bookings"] });
-      message.success(`Đặt lịch thành công! Mã đơn: ${data.id}`);
+      // message.success(`Đặt lịch thành công! Mã đơn: ${data.id}`);
     },
     onError: (error: Error) => {
       message.error(error?.message || "Đặt lịch thất bại, vui lòng thử lại!");
@@ -69,11 +83,16 @@ export const useCancelBookingByCustomer = () => {
   const { message } = App.useApp();
 
   return useMutation({
-    mutationFn: (bookingCode: string) =>
-      bookingService.cancelByCustomer(bookingCode),
-    onSuccess: (_, bookingCode) => {
+    mutationFn: ({
+      id,
+      cancel_reason,
+    }: {
+      id: string;
+      cancel_reason?: string;
+    }) => bookingService.cancelByCustomer(id, cancel_reason),
+    onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: ["bookings"] });
-      queryClient.invalidateQueries({ queryKey: ["bookings", bookingCode] });
+      queryClient.invalidateQueries({ queryKey: ["bookings", variables.id] });
       message.success("Hủy đơn thành công!");
     },
     onError: (error: Error) => {

@@ -968,10 +968,14 @@
   max-width: 1240px;
   padding: 28px 34px;
 }
-.luna-brand {
+.luna-brand,
+.luna-brand:visited,
+.luna-brand:hover {
   align-items: center;
+  color: #5c352e;
   display: flex;
   gap: 10px;
+  text-decoration: none;
 }
 .luna-brand > span {
   align-items: center;
@@ -986,6 +990,7 @@
   width: 38px;
 }
 .luna-brand strong {
+  color: #5c352e;
   font-size: 14px;
   letter-spacing: 0.16em;
 }
@@ -1059,11 +1064,11 @@
   background: var(--luna-plum);
   border: 1px solid var(--luna-plum);
   border-radius: 30px;
-  box-shadow: 0 8px 18px rgba(74, 45, 49, 0.16);
+  box-shadow: 0 4px 12px rgba(74, 45, 49, 0.14);
   color: #fff;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 600;
-  padding: 14px 23px;
+  padding: 8px 18px;
   transition:
     background 0.3s ease,
     box-shadow 0.3s ease,
@@ -1071,15 +1076,15 @@
 }
 .luna-nav-cta:hover {
   background: #a66258;
-  box-shadow: 0 11px 23px rgba(74, 45, 49, 0.22);
+  box-shadow: 0 6px 16px rgba(74, 45, 49, 0.2);
   color: #fff;
   transform: translateY(-2px);
 }
 .luna-nav-cta b {
   color: #a7645b;
-  font-size: 16px;
+  font-size: 14px;
   font-weight: 400;
-  margin-left: 9px;
+  margin-left: 6px;
 }
 .luna-hero {
   display: grid;
@@ -1133,7 +1138,8 @@
   border-radius: 30px;
   color: #fff;
   display: inline-block;
-  font-size: 11px;
+  font-size: 12px;
+  padding: 10px 22px;
   transition:
     transform 0.3s,
     background 0.3s;
@@ -1145,8 +1151,8 @@
 }
 .luna-primary span,
 .luna-text-link span {
-  font-size: 16px;
-  margin-left: 12px;
+  font-size: 14px;
+  margin-left: 8px;
 }
 .luna-text-link {
   border-bottom: 1px solid #9a827b;
@@ -1250,7 +1256,6 @@
 .luna-intro::before {
   bottom: 1%;
   color: rgba(166, 98, 88, 0.18);
-  content: "01";
   font-family: var(--font-display);
   font-size: 180px;
   font-style: italic;
@@ -1777,11 +1782,11 @@
   background: var(--luna-plum);
   color: #fff;
   display: inline-flex;
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 600;
   justify-content: center;
-  min-width: 128px;
-  padding: 15px 26px;
+  min-width: 90px;
+  padding: 8px 18px;
 }
 .luna-nav-cta b {
   color: #fff;
@@ -1789,7 +1794,7 @@
 .luna-nav-actions {
   align-items: center;
   display: flex;
-  gap: 10px;
+  gap: 8px;
   flex-shrink: 0;
 }
 .luna-nav-history {
@@ -1799,9 +1804,9 @@
   color: var(--luna-plum);
   cursor: pointer;
   font-family: inherit;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 600;
-  padding: 14px 18px;
+  padding: 7px 15px;
 }
 .luna-nav-history:hover {
   background: rgba(74, 45, 49, 0.08);
@@ -2125,12 +2130,12 @@
   padding-top: 30px;
 }
 .luna-primary {
-  box-shadow: 0 10px 24px rgba(74, 45, 49, 0.12);
+  box-shadow: 0 6px 18px rgba(74, 45, 49, 0.12);
 }
 .luna-actions .luna-primary {
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 600;
-  padding: 18px 28px;
+  padding: 10px 22px;
 }
 .luna-text-link {
   background: transparent;
@@ -2227,10 +2232,10 @@
   text-align: center;
 }
 .luna-booking-cta {
-  font-size: 16px;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  padding: 19px 34px;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  padding: 11px 24px;
 }
 
 @keyframes modal-in {
@@ -2631,9 +2636,9 @@
   }
 
   .luna-nav-cta {
-    font-size: 12px;
-    min-width: 104px;
-    padding: 12px 15px;
+    font-size: 11.5px;
+    min-width: auto;
+    padding: 7px 14px;
   }
 
   .luna-hero {
@@ -2806,8 +2811,9 @@
   }
 
   .luna-nav-cta {
-    min-width: 92px;
-    padding: 11px 12px;
+    min-width: auto;
+    padding: 6px 12px;
+    font-size: 11px;
   }
 
   .luna-nav-actions {
@@ -2816,7 +2822,7 @@
 
   .luna-nav-history {
     font-size: 11px;
-    padding: 11px 10px;
+    padding: 5px 10px;
   }
 
   .luna-hero h1 {
@@ -2825,7 +2831,7 @@
 
   .luna-actions .luna-primary {
     font-size: 12px;
-    padding: 15px 20px;
+    padding: 9px 16px;
   }
 
   .luna-proof {

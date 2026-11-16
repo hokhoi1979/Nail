@@ -131,22 +131,26 @@ export const bookingService = {
 
   // Khách tự hủy đơn pending (theo id)
   cancelByCustomer: async (bookingId: string, cancelReason?: string) => {
-    const { data, error } = await supabase
+    const { error, count } = await supabase
       .from(endpoints.bookings)
-      .update({
-        status: "cancelled",
-        cancelled_by: "customer",
-        cancel_reason: cancelReason || null,
-      })
+      .update(
+        {
+          status: "cancelled",
+          cancelled_by: "customer",
+          cancel_reason: cancelReason || null,
+        },
+        { count: "exact" }, // Đếm số dòng cập nhật thành công mà không cần quyền SELECT lại
+      )
       .eq("id", bookingId)
-      .eq("status", "pending")
-      .select();
+      .eq("status", "pending");
 
     if (error) throw error;
-    if (!data || data.length === 0) {
-      throw new Error("Khóa hủy bị từ chối (Đơn đã duyệt hoặc sai mã).");
+    if (count === 0) {
+      throw new Error(
+        "Không thể hủy đơn (Đơn đã được duyệt hoặc không tồn tại).",
+      );
     }
-    return data[0];
+    return true;
   },
 
   // Lấy các khung giờ bận để chặn trùng lịch
